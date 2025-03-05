@@ -27,6 +27,7 @@ const MODE = {
 
 
 let askAgain:boolean = true;
+let choice_of_difficulty:string = '0';
 // const starting_text:string = 
 // `Welcome to Number Guessing Game!!
 // I am Thinking of a number between 1 and 100.
@@ -111,58 +112,25 @@ let START_AGAIN:boolean = true;
             }
             let gaming_description:string = `Welcome To Number Guessing Game!`;
             console.log(gaming_description);
-            let choice = await selectChoice();
-            isValid = isAnswerValid(choice,MODE.CHOOSING_DIFFICULTY_LEVEL);
-            if(isValid){
-                if(choice === '4'){
-                    console.log("Exiting Game!!");
-                    rl.close();
-                    return;
-                }
-                console.log("Your Selected Choice is: ",choice);
-
-            }else{
-                console.log("Enter Valid Choice!!! Try Again!!");
+            await selectingChoicePhase(rl);
+            if(choice_of_difficulty === '4'){
+                console.log("Exiting Game!!");
+                rl.close();
+                return;
             }
+            console.log("Lets Start The Game!!");
+            // switch (choice_of_difficulty) {
+            //     case '1':
+            //     case '2':
+            //     case '3':
+            //     case '4':break;
+            // }
         }else{
             console.log("Please Provide Valid Answer!!");
         }
-        // }
-        
-
-        // const age = await new Promise<number>((resolve) => {
-        // rl.question('What is your age? ', (answer) => {
-        //     resolve(parseInt(answer, 10));
-        // });
-        // });
-    // }
-
-    // rl_beg.question("Enter ['Y'==>'Yes'/'N'==>'No']: ", (inp:string) => {
-    //     let isValid:boolean = isAnswerValid(inp,MODE.BEGINING_OF_GAME);
-    //     if(isValid){
-    //         if(inp === 'N'){
-    //             START_AGAIN = false;
-    //             rl_beg.close();
-    //         }
-    //         // let gaming_description:string = `Welcome To Number Guessing Game!`;
-    //         // console.log(gaming_description);
-    //         // let difficulty_description:string = `Please Select Difficulty Level:
-    //         // 1.Easy (10 Chances)
-    //         // 2.Medium (5 Chances)
-    //         // 3.Hard (3 Chances)`;
-    //         // console.log(difficulty_description);
-    //         // rl.question("Enter Your Choice: ",(choice:string)=>{
-    //         //     let isChoiceValid:boolean = isAnswerValid(choice,MODE.CHOOSING_DIFFICULTY_LEVEL);
-    //         //     if(isChoiceValid){
-
-    //         //     }
-    //         // });
-    //     }else{
-    //         console.log("Please Provide Valid Answer!!");
-    //     }
         if (START_AGAIN) loop();
     // });
-})();
+}})();
 
 
 function isAnswerValid(inp:string,mode:number) : boolean {
@@ -201,4 +169,16 @@ async function selectChoice():Promise<string> {
                 });
             });
             return choice;
+}
+
+async function selectingChoicePhase(rl:readline.Interface):Promise<void> {
+    choice_of_difficulty = await selectChoice();
+    let isValid = isAnswerValid(choice_of_difficulty,MODE.CHOOSING_DIFFICULTY_LEVEL);
+            if(isValid){
+                console.log("Your Selected Choice is: ",choice_of_difficulty);
+                return;
+            }else{
+                console.log("Enter Valid Choice!!! Try Again!!");
+                await selectingChoicePhase(rl);
+            }
 }
