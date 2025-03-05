@@ -2,9 +2,8 @@
 
 
 //Input Checking functions..............................................................
-function isAnswerValid(inp: string, mode: number): boolean {
-
-    switch (mode) {
+function isAnswerValid(inp: string, phase: number): boolean {
+    switch (phase) {
         case 0: return checkYesOrNoValidity(inp);
         case 1: return isGivenChoiceValid(inp);
         case 2: return isGivenGuessValid(inp);

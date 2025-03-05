@@ -1,4 +1,4 @@
-import { Phase,Mode} from './interface'
+import { Phase,Mode} from './types'
 
 const PHASE:Phase = {
     'BEGINING_OF_GAME':0,
@@ -6,12 +6,6 @@ const PHASE:Phase = {
     'IN_BETWEEN_OF_GAME':2,
     'END_OF_GAME':3
 } 
-
-// const MODE:Mode = {
-//     'EASY':10,
-//     'MEDIUM':5,
-//     'HARD':3
-// }
 
 const MODES:Mode[]=[{
     MODE:'EASY',
@@ -24,7 +18,8 @@ const MODES:Mode[]=[{
 {
     MODE:'HARD',
     CHANCES:3,
-},]
+},
+]
 
 export{
     PHASE,
