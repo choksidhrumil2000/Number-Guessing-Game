@@ -14,172 +14,174 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 //=================================Number Guessing Game =========================================================
 const readline_1 = __importDefault(require("readline"));
+const constants_1 = require("./constants");
+const helper_1 = require("./helper");
+//GLOBAL VARIABLES.................................................................
 const rl = readline_1.default.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-const MODE = {
-    'BEGINING_OF_GAME': 0,
-    'CHOOSING_DIFFICULTY_LEVEL': 1,
-    'IN_BETWEEN_OF_GAME': 2,
-    'END_OF_GAME': 3
-};
-let askAgain = true;
-// const starting_text:string = 
-// `Welcome to Number Guessing Game!!
-// I am Thinking of a number between 1 and 100.
-// DO You Want to Start a Game?`;
-// console.log(starting_text);
-const starting_statement = 'Do You Want to Start a Game?';
-let START_AGAIN = true;
-// while(START_AGAIN){
-//     askIfUserWantsToPlay();
-//     // console.log('Do You Want to Start a Game?');
-//     // rl_beg.question("Enter ['Y'==>'Yes'/'N'==>'No']: ", (inp:string) => {
-//     //     let isValid:boolean = isAnswerValid(inp,MODE.BEGINING_OF_GAME);
-//     //     if(isValid){
-//     //         if(inp === 'N'){
-//     //             START_AGAIN = false;
-//     //             rl_beg.close();
-//     //         }
-//     //         // let gaming_description:string = `Welcome To Number Guessing Game!`;
-//     //         // console.log(gaming_description);
-//     //         // let difficulty_description:string = `Please Select Difficulty Level:
-//     //         // 1.Easy (10 Chances)
-//     //         // 2.Medium (5 Chances)
-//     //         // 3.Hard (3 Chances)`;
-//     //         // console.log(difficulty_description);
-//     //         // rl.question("Enter Your Choice: ",(choice:string)=>{
-//     //         //     let isChoiceValid:boolean = isAnswerValid(choice,MODE.CHOOSING_DIFFICULTY_LEVEL);
-//     //         //     if(isChoiceValid){
-//     //         //     }
-//     //         // });
-//     //     }else{
-//     //         console.log("Please Provide Valid Answer!!");
-//     //     }
-//     //     // if (askAgain) loop();
-//     // });
-// }
-// async function askIfUserWantsToPlay(){
-//     console.log('Do You Want to Start a Game?');
-//     await rl_beg.question("Enter ['Y'==>'Yes'/'N'==>'No']: ", (inp:string) => {
-//         let isValid:boolean = isAnswerValid(inp,MODE.BEGINING_OF_GAME);
-//         if(isValid){
-//             if(inp === 'N'){
-//                 START_AGAIN = false;
-//                 rl_beg.close();
-//             }
-//             // let gaming_description:string = `Welcome To Number Guessing Game!`;
-//             // console.log(gaming_description);
-//             // let difficulty_description:string = `Please Select Difficulty Level:
-//             // 1.Easy (10 Chances)
-//             // 2.Medium (5 Chances)
-//             // 3.Hard (3 Chances)`;
-//             // console.log(difficulty_description);
-//             // rl.question("Enter Your Choice: ",(choice:string)=>{
-//             //     let isChoiceValid:boolean = isAnswerValid(choice,MODE.CHOOSING_DIFFICULTY_LEVEL);
-//             //     if(isChoiceValid){
-//             //     }
-//             // });
-//         }else{
-//             console.log("Please Provide Valid Answer!!");
-//         }
-//         // if (askAgain) loop();
-//     });
-// }
-(function loop() {
+let choice_of_difficulty = '0';
+let START_APP_AGAIN = false;
+let highScore_Track = [];
+//main function where whole App resides...............................................
+(function main(start_game_again) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log('Do You Want to Start a Number Guessing Game?');
-        var answer = yield new Promise((resolve) => {
+        if (start_game_again) {
+            console.log('Do You Want to Start a Number Guessing Game Again?');
+        }
+        else {
+            console.log('Do You Want to Start a Number Guessing Game?');
+        }
+        let answer = yield new Promise((resolve) => {
             rl.question("Enter ['Y'==>'Yes'/'N'==>'No']: ", (inp) => {
                 resolve(inp);
             });
         });
-        let isValid = isAnswerValid(answer, MODE.BEGINING_OF_GAME);
+        let isValid = (0, helper_1.isAnswerValid)(answer, constants_1.PHASE.BEGINING_OF_GAME);
         if (isValid) {
-            if (answer === 'N') {
-                START_AGAIN = false;
-                // break;
+            if (answer.toLowerCase() === 'n') {
+                START_APP_AGAIN = false;
                 rl.close();
+                if (highScore_Track.length !== 0)
+                    ShowHighScores();
                 return;
             }
-            let gaming_description = `Welcome To Number Guessing Game!`;
+            let gaming_description = `****************** Welcome To Number Guessing Game! ******************`;
             console.log(gaming_description);
-            let difficulty_description = `Please Select Difficulty Level:
-            1.Easy (10 Chances)
-            2.Medium (5 Chances)
-            3.Hard (3 Chances)`;
-            console.log(difficulty_description);
-            // rl.question("Enter Your Choice: ",(choice:string)=>{
-            //     let isChoiceValid:boolean = isAnswerValid(choice,MODE.CHOOSING_DIFFICULTY_LEVEL);
-            //     if(isChoiceValid){
-            //     }
-            // });
-            // const answer = await new Promise<string>((resolve) => {
-            //     rl.question("Enter ['Y'==>'Yes'/'N'==>'No']: ", (answer) => {
-            //         resolve(answer);
-            //     });
-            // });
+            console.log("");
+            yield selectingChoicePhase(rl);
+            switch (choice_of_difficulty) {
+                case '1':
+                    yield gamePlay(constants_1.MODES[0].MODE, constants_1.MODES[0].CHANCES);
+                    break;
+                case '2':
+                    yield gamePlay(constants_1.MODES[1].MODE, constants_1.MODES[1].CHANCES);
+                    break;
+                case '3':
+                    yield gamePlay(constants_1.MODES[2].MODE, constants_1.MODES[2].CHANCES);
+                    break;
+                case '4':
+                    console.log("******** Exiting Game!! ********");
+                    START_APP_AGAIN = false;
+                    rl.close();
+                    if (highScore_Track.length !== 0)
+                        ShowHighScores();
+                    return;
+            }
         }
         else {
-            console.log("Please Provide Valid Answer!!");
+            console.log("ERROR: Please Provide Valid Answer!!");
+            console.log("");
+            START_APP_AGAIN = true;
         }
-        // }
-        // const age = await new Promise<number>((resolve) => {
-        // rl.question('What is your age? ', (answer) => {
-        //     resolve(parseInt(answer, 10));
-        // });
-        // });
-        // }
-        // rl_beg.question("Enter ['Y'==>'Yes'/'N'==>'No']: ", (inp:string) => {
-        //     let isValid:boolean = isAnswerValid(inp,MODE.BEGINING_OF_GAME);
-        //     if(isValid){
-        //         if(inp === 'N'){
-        //             START_AGAIN = false;
-        //             rl_beg.close();
-        //         }
-        //         // let gaming_description:string = `Welcome To Number Guessing Game!`;
-        //         // console.log(gaming_description);
-        //         // let difficulty_description:string = `Please Select Difficulty Level:
-        //         // 1.Easy (10 Chances)
-        //         // 2.Medium (5 Chances)
-        //         // 3.Hard (3 Chances)`;
-        //         // console.log(difficulty_description);
-        //         // rl.question("Enter Your Choice: ",(choice:string)=>{
-        //         //     let isChoiceValid:boolean = isAnswerValid(choice,MODE.CHOOSING_DIFFICULTY_LEVEL);
-        //         //     if(isChoiceValid){
-        //         //     }
-        //         // });
-        //     }else{
-        //         console.log("Please Provide Valid Answer!!");
-        //     }
-        if (START_AGAIN)
-            loop();
-        // });
+        if (START_APP_AGAIN)
+            main(START_APP_AGAIN);
+        // else if(highScore_Track.length !== 0)ShowHighScores();
     });
-})();
-function isAnswerValid(inp, mode) {
-    switch (mode) {
-        case 0: return checkYesOrNoValidity(inp);
-        case 1: return isGivenChoiceValid(inp);
-        case 2:
-            return false;
-            break;
-        case 3:
-            return false;
-            break;
-        default: return false;
+})(START_APP_AGAIN);
+//====================================== Other Functions =======================================================
+//Phase Where user user selects Difficulty..................................................
+function selectingChoicePhase(rl) {
+    return __awaiter(this, void 0, void 0, function* () {
+        choice_of_difficulty = yield selectChoice();
+        let isValid = (0, helper_1.isAnswerValid)(choice_of_difficulty, constants_1.PHASE.CHOOSING_DIFFICULTY_LEVEL);
+        if (isValid) {
+            console.log("Your Selected Choice is: ", choice_of_difficulty);
+            return;
+        }
+        else {
+            console.log("ERROR: Enter Valid Choice!!! Try Again!!");
+            yield selectingChoicePhase(rl);
+        }
+    });
+}
+//Displays dificulty levels and give choice of it..........................................
+function selectChoice() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let difficulty_description = `*********************************************************************
+*           Please Select Difficulty Level:                         *
+*            1.Easy (10 Chances)                                    *
+*            2.Medium (5 Chances)                                   *
+*            3.Hard (3 Chances)                                     *
+*                                                                   *
+*           **If You Want to Exit the Game Enter 4**                *
+*********************************************************************`;
+        console.log(difficulty_description);
+        const choice = yield new Promise((resolve) => {
+            rl.question("Enter Your Choice: ", (answer) => {
+                resolve(answer);
+            });
+        });
+        return choice;
+    });
+}
+//Function which contains code of whole Game....................................
+function gamePlay(mode, chances) {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log("******** Lets Start The Game!! ********");
+        console.log("******** If you want to exit in between the game simply write exit in the input ********");
+        let computer_guess = Math.floor(Math.random() * 100) + 1;
+        console.log(computer_guess);
+        let isWon = false;
+        let score = chances;
+        while (chances > 0) {
+            let user_guess = yield new Promise((resolve) => {
+                rl.question("Enter Your Guess: ", (guess) => {
+                    resolve(guess);
+                });
+            });
+            let isValid = (0, helper_1.isAnswerValid)(user_guess, constants_1.PHASE.IN_BETWEEN_OF_GAME);
+            if (isValid) {
+                if (user_guess === 'exit') {
+                    console.log('******** Exiting the Game *********');
+                    START_APP_AGAIN = false;
+                    rl.close();
+                    return;
+                }
+                else if (user_guess === 'hint') {
+                    console.log(`Number is in Between ${computer_guess - 5} and ${computer_guess + 5} `);
+                    continue;
+                }
+                if (computer_guess < parseInt(user_guess)) {
+                    console.log(`:( Incorrect!! Computer's Guess is less than ${user_guess}`);
+                }
+                else if (computer_guess > parseInt(user_guess)) {
+                    console.log(`:( Incorrect!! Computer's Guess is greater than ${user_guess}`);
+                }
+                else {
+                    console.log(":) Correct !!! Yehh !! Your Guess is Correct!!");
+                    console.log(":) You Won The Game!!!!");
+                    highScore_Track.push({ HIGH_SCORE: (score - chances + 1), DIFFICULTY: mode, STATUS: 'Win' });
+                    START_APP_AGAIN = true;
+                    isWon = true;
+                    break;
+                }
+                if (chances > 1) {
+                    console.log(`You have ${chances - 1} chances left!!`);
+                    console.log("*** If You Want Hint!! Type hint in input!! ***");
+                }
+            }
+            else {
+                console.log("ERROR: Guess Should be Valid!!");
+                chances++;
+            }
+            chances--;
+        }
+        if (!isWon) {
+            console.log(":( You Lose The Game!!!");
+            console.log(`******** Computer's Guess is ${computer_guess} ********`);
+            highScore_Track.push({ HIGH_SCORE: 0, DIFFICULTY: mode, STATUS: 'Lose' });
+            START_APP_AGAIN = true;
+        }
+    });
+}
+function ShowHighScores() {
+    console.log("Score Board: ");
+    let lines = `----------------------------------------------------------------------------------`;
+    console.log(lines);
+    for (let i = 0; i < highScore_Track.length; i++) {
+        console.log(`\t\tRound:${i + 1} == Mode:${highScore_Track[i].DIFFICULTY} == Score:${highScore_Track[i].HIGH_SCORE} == Status:${highScore_Track[i].STATUS}`);
     }
-}
-function checkYesOrNoValidity(inp) {
-    inp = inp.toLowerCase();
-    if (inp !== 'y' && inp !== 'n')
-        return false;
-    return true;
-}
-function isGivenChoiceValid(choice) {
-    let ch = parseInt(choice);
-    if (!ch && ch !== 1 && ch !== 2 && ch !== 3)
-        return false;
-    return true;
+    console.log(lines);
 }
